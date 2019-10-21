@@ -2,14 +2,22 @@
 #include<iostream>
 using namespace std;
 using namespace cv;
-int main()
-{
+
+VideoCapture getWebcam(int webcam) {
 	VideoCapture cap;
-	if (!cap.open(1)) {
-		return 0;
+	if (!cap.open(webcam)) {
+		cout << "Webcam not found" << endl;
+		_Exit(0);
+		return NULL;
 	}
+
+	return cap;
+}
+
+void runVideo(float pixelScale,int step,String windowName,bool logConsole,bool showCam) {
+	VideoCapture cap = getWebcam(0);
 	int i = 0;
-	
+
 	for (;;) {
 		Mat frame, grey, lowRes;
 		cap >> frame;
@@ -18,26 +26,39 @@ int main()
 		}
 
 		//make a grey frame
-		cvtColor(frame,grey, COLOR_BGR2GRAY);
-		//Resize image with factor 0.05
-		resize(grey, lowRes, Size(),0.05,0.05);
-
+		cvtColor(frame, grey, COLOR_BGR2GRAY);
 		
-		imshow("Webcam", frame);
-		imshow("Greycam", grey);
-		imshow("lowRes", lowRes);
-		if (i > 1) {
-			system("cls");
-			//output of greyscales
-			cout << lowRes << endl;
-			i = 0;
+		//Resize image with given factor "pixelScale"
+		resize(grey, lowRes, Size(), pixelScale, pixelScale);
+
+		if (showCam) {
+			namedWindow(windowName, 0);
+			resizeWindow(windowName, 640, 480);
+			imshow(windowName, lowRes);
 		}
-		i++;
+
+		if(logConsole){
+			if (i > step) {
+				system("cls");
+				//output of greyscales
+				cout << lowRes << endl;
+				cout << lowRes.size << endl;
+				i = 0;
+			}
+			i++;
+		}
 
 		if (waitKey(10) == 27) { //Esc(27) stop capturing
 			break;
 		}
 	}
-	cout << "Hellon" << endl;
+
+
+}
+int main()
+{
+	runVideo(0.1,5,"Webcam",true,false);
 	return 0;
 }
+
+
