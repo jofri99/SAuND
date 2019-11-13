@@ -26,10 +26,20 @@ double getSquare(int x, int y, int rows, int cols)
 			avg += (int) LOWRES.at<uchar>(i, j);
 			counter++;
 		}
-		
 	}
 
 	avg = avg / counter;
+
+	if (avg > 128) {
+		avg *= 1.2;
+		if (avg > 255) {
+			avg = 255;
+		}
+	}
+	else {
+		avg *= 0.7;
+	}
+
 	return avg;
 }
 
