@@ -16,10 +16,21 @@ VideoCapture getWebcam(int webcam) {
 	return cap;
 }
 
-double getSquare(int x, int y, int rows, int cols) 
+double normieren(double val, double min, double max) {
+	if (val > max) {
+		val = max;
+	}
+	else if (val < min) {
+		val = min;
+	}
+	return (255.0f * ((val - min) / (max - min)));
+}
+
+double getSquare(int x, int y, int rows, int cols,double hVal, double lVal) 
 {
 	int counter = 0;
 	double avg = 0;
+	double diff = hVal - lVal;
 
 	for (int i =x; i < x + rows; i++) {
 		for (int j= y; j < y + cols; j++) {
@@ -29,18 +40,16 @@ double getSquare(int x, int y, int rows, int cols)
 	}
 
 	avg = avg / counter;
-
-	if (avg > 128) {
-		avg *= 1.2;
-		if (avg > 255) {
-			avg = 255;
-		}
+	/*if (avg < lVal) {
+		avg = lVal;
 	}
-	else {
-		avg *= 0.7;
-	}
+	else if (avg > hVal) {
+		avg = hVal;
+		}*/
 
-	return avg;
+	
+
+	return normieren(avg,0,20);
 }
 
 void runVideo(float pixelScale, String windowName, bool showCam) 
@@ -71,12 +80,12 @@ void runVideo(float pixelScale, String windowName, bool showCam)
 			imshow(windowName, LOWRES);
 		}
 
-		double avg = getSquare(0, 0, 8, 8);
+		double avg = getSquare(0, 0, 8, 8,60,150);
 		system("cls");
 		for (int i = 0; i < 24; i += 8) {
 			cout << endl;
 			for (int j = 0; j < 32; j += 8) {
-				avg = getSquare(i, j, 8, 8);
+				avg = getSquare(i, j, 8, 8,60,150);
 				cout << avg << "\t";
 			}
 		}
